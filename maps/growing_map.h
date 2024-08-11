@@ -3,7 +3,7 @@
 #include <stdbool.h>
 #include <stdlib.h>
 
-#include "../arrays/macro_dynarr.h"
+#include "../arrays/dynarray.h"
 #include "hashes.h"
 
 typedef struct {
@@ -12,8 +12,8 @@ typedef struct {
 } MapEntry;
 
 typedef struct {
-    DynArr(MapEntry) entries;
-    DynArr(int64_t)  hashes;
+    DynArray(MapEntry) entries;
+    DynArray(int64_t)  hashes;
 } Map;
 
 Map map_init(int elem_count) {
@@ -24,8 +24,8 @@ Map map_init(int elem_count) {
         start_count = 8;
     }
 
-    mdyn_init(&m.entries, start_count);
-    mdyn_init(&m.hashes, start_count);
+    dyn_init(&m.entries, start_count);
+    dyn_init(&m.hashes, start_count);
 
     // Set the whole hashmap to empty. -1 means the slot hasn't been filled yet
     for (int i = 0; i < m.hashes.capacity; i++) {
@@ -51,7 +51,7 @@ void map_reinsert(Map *m, MapEntry entry, uint64_t entry_idx) {
 }
 
 void map_grow(Map *m) {
-    mdyn_resize(&m->hashes, m->hashes.capacity * 2);
+    dyn_resize(&m->hashes, m->hashes.capacity * 2);
     for (uint64_t i = 0; i < m->hashes.capacity; i++) {
         m->hashes.arr[i] = -1;
     }
@@ -79,7 +79,7 @@ bool map_insert(Map *m, uint64_t key, uint64_t val) {
         // Did we find an empty slot?
         if (cur_hash == -1) {
             m->hashes.arr[cur_hash_idx] = m->entries.size;
-            mdyn_append(&m->entries, new_entry);
+            dyn_append(&m->entries, new_entry);
             return true;
 
         // Is this key already in the map? If so, replace the entry with our new entry
@@ -124,6 +124,6 @@ void map_clear(Map *m) {
 }
 
 void map_free(Map *m) {
-    mdyn_free(&m->entries);
-    mdyn_free(&m->hashes);
+    dyn_free(&m->entries);
+    dyn_free(&m->hashes);
 }

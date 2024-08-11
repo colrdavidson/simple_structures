@@ -8,17 +8,17 @@ typedef struct {
     uint64_t *buffer;
     uint64_t size;
     uint64_t capacity;
-} DynArray;
+} SimpleDynArray;
 
-DynArray dyn_init(uint64_t starting_capacity) {
-    DynArray arr;
+SimpleDynArray simple_dyn_init(uint64_t starting_capacity) {
+    SimpleDynArray arr;
     arr.capacity = starting_capacity;
     arr.buffer = calloc(arr.capacity, sizeof(uint64_t));
     arr.size = 0;
     return arr;
 }
 
-void dyn_append(DynArray *arr, uint64_t elem) {
+void simple_dyn_append(SimpleDynArray *arr, uint64_t elem) {
     if (arr->size + 1 > arr->capacity) {
         arr->capacity *= 2;
         arr->buffer = realloc(arr->buffer, arr->capacity);
@@ -28,13 +28,12 @@ void dyn_append(DynArray *arr, uint64_t elem) {
     arr->size += 1;
 }
 
-uint64_t dyn_get(DynArray *arr, uint64_t idx) {
+uint64_t simple_dyn_get(SimpleDynArray *arr, uint64_t idx) {
     assert(idx <= arr->size);
-
     return arr->buffer[idx];
 }
 
-void dyn_free(DynArray *arr) {
+void simple_dyn_free(SimpleDynArray *arr) {
     free(arr->buffer);
     arr->size = 0;
     arr->capacity = 0;

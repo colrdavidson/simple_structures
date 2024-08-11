@@ -6,8 +6,8 @@
 #include "maps/fixed_set.h"
 #include "maps/fixed_map.h"
 #include "maps/growing_map.h"
-#include "arrays/dynarr.h"
-#include "arrays/macro_dynarr.h"
+#include "arrays/simple_dynarray.h"
+#include "arrays/dynarray.h"
 
 void test_arena(void) {
     printf("=== ARENA TEST ===\n");
@@ -100,10 +100,33 @@ void test_fixed_map(void) {
     printf("\n");
 }
 
-void test_dynarray(void) {
+void test_simple_dynarray(void) {
     printf("=== SIMPLE DYNAMIC ARRAY TEST ===\n");
 
-    DynArray arr = dyn_init(32);
+    SimpleDynArray arr = simple_dyn_init(32);
+
+    printf("Trying to append data\n");
+    simple_dyn_append(&arr, 99);
+    simple_dyn_append(&arr, 200);
+    simple_dyn_append(&arr, 1);
+    simple_dyn_append(&arr, 0);
+
+    printf("Checking that data is in there\n");
+    for (int i = 0; i < arr.size; i++) {
+        printf("arr[%d] = %llu\n", i, simple_dyn_get(&arr, i));
+    }
+
+    printf("Cleaning up after ourselves\n");
+    simple_dyn_free(&arr);
+
+    printf("\n");
+}
+
+void test_dynarray(void) {
+    printf("=== DYNAMIC ARRAY TEST ===\n");
+    DynArray(int) arr;
+
+    dyn_init(&arr, 32);
 
     printf("Trying to append data\n");
     dyn_append(&arr, 99);
@@ -113,34 +136,11 @@ void test_dynarray(void) {
 
     printf("Checking that data is in there\n");
     for (int i = 0; i < arr.size; i++) {
-        printf("arr[%d] = %llu\n", i, dyn_get(&arr, i));
+        printf("arr[%d] = %d\n", i, dyn_get(&arr, i));
     }
 
     printf("Cleaning up after ourselves\n");
     dyn_free(&arr);
-
-    printf("\n");
-}
-
-void test_macro_dynarr(void) {
-    printf("=== FLEXIBLE DYNAMIC ARRAY TEST ===\n");
-    DynArr(int) arr;
-
-    mdyn_init(&arr, 32);
-
-    printf("Trying to append data\n");
-    mdyn_append(&arr, 99);
-    mdyn_append(&arr, 200);
-    mdyn_append(&arr, 1);
-    mdyn_append(&arr, 0);
-
-    printf("Checking that data is in there\n");
-    for (int i = 0; i < arr.size; i++) {
-        printf("arr[%d] = %d\n", i, mdyn_get(&arr, i));
-    }
-
-    printf("Cleaning up after ourselves\n");
-    mdyn_free(&arr);
 
     printf("\n");
 }
@@ -187,7 +187,7 @@ int main(int argc, char **argv) {
     test_arena();
     test_fixed_set();
     test_fixed_map();
+    test_simple_dynarray();
     test_dynarray();
-    test_macro_dynarr();
     test_growing_map();
 }

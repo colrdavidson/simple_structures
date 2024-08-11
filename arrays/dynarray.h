@@ -4,7 +4,7 @@
 #include <stdlib.h>
 #include <assert.h>
 
-#define DynArr(type)       \
+#define DynArray(type)     \
     struct {               \
         type *arr;         \
         uint64_t size;     \
@@ -12,32 +12,32 @@
     }
 
 #define elem_size(dyn) sizeof(*((dyn)->arr))
-#define mdyn_init(dyn, start_capacity)                          \
+#define dyn_init(dyn, start_capacity)                           \
     do {                                                        \
         (dyn)->capacity = (start_capacity);                     \
         (dyn)->size = 0;                                        \
         (dyn)->arr = malloc(elem_size(dyn) * (start_capacity)); \
     } while (0)
 
-#define mdyn_resize(dyn, new_size)                                     \
+#define dyn_resize(dyn, new_size)                                      \
     do {                                                               \
         (dyn)->capacity = (new_size);                                  \
         (dyn)->arr = realloc((dyn)->arr, elem_size(dyn) * (new_size)); \
     } while (0)
 
-#define mdyn_append(dyn, elem)                       \
+#define dyn_append(dyn, elem)                        \
     do {                                             \
         if ((dyn)->size + 1 > (dyn)->capacity) {     \
-            mdyn_resize((dyn), (dyn)->capacity * 2); \
+            dyn_resize((dyn), (dyn)->capacity * 2);  \
         }                                            \
         (dyn)->arr[(dyn)->size] = elem;              \
         (dyn)->size += 1;                            \
     } while (0)
 
 
-#define mdyn_get(dyn, idx) (dyn)->arr[(idx)]
+#define dyn_get(dyn, idx) (dyn)->arr[(idx)]
 
-#define mdyn_free(dyn)       \
+#define dyn_free(dyn)        \
     do {                     \
         free((dyn)->arr);    \
         (dyn)->size = 0;     \
