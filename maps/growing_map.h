@@ -3,7 +3,7 @@
 #include <stdbool.h>
 #include <stdlib.h>
 
-#include "macro_dynarr.h"
+#include "../arrays/macro_dynarr.h"
 
 typedef struct {
     uint64_t key;

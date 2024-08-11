@@ -2,11 +2,11 @@
 #include <stdint.h>
 #include <stdbool.h>
 
-#include "arena.h"
-#include "fixed_map.h"
-#include "growing_map.h"
-#include "dynarr.h"
-#include "macro_dynarr.h"
+#include "allocators/arena.h"
+#include "maps/fixed_map.h"
+#include "maps/growing_map.h"
+#include "arrays/dynarr.h"
+#include "arrays/macro_dynarr.h"
 
 void test_arena(void) {
     printf("=== ARENA TEST ===\n");
