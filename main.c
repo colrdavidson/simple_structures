@@ -11,6 +11,7 @@
 #include "maps/growing_map.h"
 #include "lists/simple_dynarray.h"
 #include "lists/dynarray.h"
+#include "maps/intern.h"
 
 void test_scratch(ScratchAlloc *scr) {
     printf("=== SCRATCH TEST ===\n");
@@ -189,7 +190,7 @@ void test_dynarray(Arena *a) {
 }
 
 void test_growing_map(Arena *a) {
-    printf("=== Growing MAP TEST ===\n");
+    printf("=== GROWING MAP TEST ===\n");
     Map m = map_init(a, 0);
 
     for (int i = 0; i < 20; i += 1) {
@@ -220,6 +221,27 @@ void test_growing_map(Arena *a) {
     printf("\n");
 }
 
+void test_intern(Arena *a, Arena *string_block) {
+	printf("=== STRING INTERNING TEST ===\n");
+	Intern in = intern_init(a, string_block, 0);
+
+	for (int i = 0; i < 10; i++) {
+		char buf[2] = {};
+		buf[0] = 'a' + i;
+		intern_get(&in, buf);
+	}
+
+	char *test_string = "Apple";
+	char *interned_string = intern_get(&in, test_string);
+	printf("orig string: %s, new string: %s || orig ptr: %p, new ptr: %p\n",
+			test_string, interned_string, test_string, interned_string);
+
+	arena_clear(a);
+	arena_clear(string_block);
+
+	printf("\n");
+}
+
 int main(int argc, char **argv) {
 	ScratchAlloc scr = scratch_init(8 * 1024);
 	printf("~~ Hello Memory, it's me the ScratchAllocator! ~~\n\n");
@@ -239,4 +261,9 @@ int main(int argc, char **argv) {
     test_simple_dynarray(a);
     test_dynarray(a);
     test_growing_map(a);
+
+	printf("~~ Now We Have Two Arenas ~~\n\n");
+	Arena *string_block = arena_init(8 * 1024);
+
+	test_intern(a, string_block);
 }

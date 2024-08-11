@@ -36,5 +36,11 @@
         (dyn)->size += 1;                            \
     } while (0)
 
-
 #define dyn_get(dyn, idx) (dyn)->arr[(idx)]
+
+#define dyn_assign(dyn1, dyn2)               \
+	do {                                     \
+		(dyn1)->arr      = (dyn2)->arr;      \
+		(dyn1)->size     = (dyn2)->size;     \
+		(dyn1)->capacity = (dyn2)->capacity; \
+	} while (0)

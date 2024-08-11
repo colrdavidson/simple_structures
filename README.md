@@ -46,5 +46,14 @@ It's easy to read, but not super useful unless we want to write a lot of them by
 With a little macro magic, we've got something we can use for later, the real [DynArray](lists/dynarray.h)
 
 ### Map and Sets Part 2
+
 Remember when we made our first maps? They were pretty limited, right?
 Now that we can grow, we can finally make ourselves a real [HashMap](maps/growing_map.h)
+HashMaps are useful for all sorts of things. I've used them to write little crappy assemblers,
+making a map full of labels-to-addresses, so I can go back and patch in jump targets later.
+I've also used them to handle keywords for compilers, using them to see if the token I just
+parsed was a keyword, and if it was, what the right response should be.
+
+Another great tool in the toolbox is a [String Interner](maps/intern.h).  
+String interners are great for deduplicating key strings as you parse them in from user data.
+I've used them to squash repetitive log entries, and to do function name deduplication in profilers and linkers.
