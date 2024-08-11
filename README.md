@@ -13,10 +13,10 @@ No more easy memory. It's time to get our hands dirty, and get those darn bytes 
 
 ### Basic Sets and Maps
 What if I want to deduplicate a list of things?
-Try a [HashSet](maps/fixed_set.h)
+Try a [Fixed HashSet](maps/fixed_set.h)
 
 What about a map from an id to a value?
-[HashMap](maps/fixed_map.h) Time
+[Fixed HashMap](maps/fixed_map.h) Time
 
 
 ## Breaking out of the Box
