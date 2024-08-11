@@ -9,7 +9,7 @@ I'm putting a little house rule in place for these, so we can really use what we
 We're only going to confine malloc to our allocator dungeon as soon as possible. Scary? Yes. I know.
 No more easy memory. It's time to get our hands dirty, and get those darn bytes ourselves.
 
-[This](allocators/scratch.h) is baby's first allocator. It's all you need to get started, even if you'll outgrow it fast.
+The [Scratch Buffer](allocators/scratch.h) is baby's first allocator. It's all you need to get started, even if you'll outgrow it fast.
 
 ### Basic Sets and Maps
 What if I want to deduplicate a list of things?
