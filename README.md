@@ -47,15 +47,16 @@ With a little macro magic, we've got something we can use for later, the real [D
 
 ### Map and Sets Part 2
 
-Remember when we made our first maps? They were pretty limited, right?
-Now that we can grow, we can finally make ourselves a real [HashMap](maps/growing_map.h)
-HashMaps are useful for all sorts of things. I've used them to write little crappy assemblers,
-making a map full of labels-to-addresses, so I can go back and patch in jump targets later.
-I've also used them to handle keywords for compilers, using them to see if the token I just
-parsed was a keyword, and if it was, what the right response should be.
+Remember when we made our first maps? They were pretty limited, right?  
+
+Now that we can grow, we can finally make ourselves a real [HashMap](maps/growing_map.h).  
+HashMaps are useful for all sorts of things. I've used them to write little crappy assemblers,  
+making a map full of labels-to-addresses, so I can go back and patch in jump targets later.  
+I've also used them to handle keywords for compilers, using them to see if the token I just  
+parsed was a keyword, and if it was, what the right response should be.  
 
 Another great tool in the toolbox is [String Interning](maps/intern.h).  
-String interning is great for deduplicating key strings as you parse them in from user data.
+String interning is great for deduplicating key strings as you parse them in from user data.  
 I've used it to squash repetitive log entries, and to do function name deduplication in profilers and linkers.
 
 ### Neat Little Tricks
