@@ -30,7 +30,8 @@ skip around if you're not quite ready to get through the whole gauntlet today.
 
 First up, I'm sticking a house rule in place for these, just to keep it interesting.
 No libraries, and we're calling malloc as little as possible.
-Gonna stick it in the allocator dungeon, lock it up and throw away the key. Scary? Yes. I know.  
+Gonna stick it in the allocator dungeon, lock it up and throw away the key. Scary? Yes. I know. 
+ 
 No more easy memory, with a fluffy little malloc of an int here, or a float there.  
 It's time to get our hands dirty and source those darn bytes ourselves.
 
@@ -48,37 +49,38 @@ What about a map from a small set of ids to values?
 [Fixed HashMap](maps/fixed_map.h) Time
 
 
-## Breaking out of the Box
+## Growing Pains
 Ok, we can't stay in a tiny little box forever. How do we get more memory?  
 How do we handle so much data we can fill all of our RAM?  
-We have to start with a little detour into the humble linked list.  
+We have to take a little detour into the humble linked list.  
 
-### Chasing Pointers
-The [Linked List](lists/simple_linked_list.h) is a clunky little guy, but we're going to need it for our next project!
+### Linked Lists
+The [Linked List](lists/simple_linked_list.h) is a clunky little guy, but it shows up in some odd places.
+It's used heavily in the linux kernel, it can be made lock-free, and it occasionally shows up as
+a way to represent a growable list. It also shows up in our next datastructure, the Arena.
 
-### Ok, Ok, I Know You Wanted Arenas
+### Arenas
 With linked lists out of the way, it's time for allocators part 2.  
 The [Arena](allocators/arena.h) uses that spiffy new linked-list idea to append new chunks of memory to itself,
 and when it's time to clean up it can just walk the nodes to clean up.
 
-## Infinite Memory, Infinite New Problems
+
+## A New Era of Memory Growth
 Now that we have space we can grow, we can start into the real meat and potatoes of our day-to-day datastructures.
 
-### The Dynamic Array
+### Dynamic Arrays
 (or vector if you're a weird c++ person)
 
-We'll start with something I use *constantly*, in as simple a form as we can.
-The [DynArray](lists/simple_dynarray.h) is just an array that grows as you push things into it.
-Of course, this implementation is a little limited, but it's fairly straightforward.
-
-Can't stick with it for long though, unless we want to write a million of them.
-With a little macro magic, we've got something we can use for real: [DynArray V2](lists/dynarray.h)
+We'll start with something I use *constantly*.
+The [Dynamic Array](lists/simple_dynarray.h) is an array that grows as you push things into it.
+This one is a little limited though, what if I need one that does more than ints?
+With a little macro magic, we've got something we can use for real: [Dynamic Array V2](lists/dynarray.h)
 
 ### Map and Sets Part 2
 
-Remember when we made our first maps? They were pretty limited, right?  
+Dynamic Arrays open up all sorts of comfy, cozy doors for us.  
+We can finally make ourselves a real [HashMap](maps/growing_map.h)!  
 
-Now that we can grow, we can finally make ourselves a real [HashMap](maps/growing_map.h).  
 HashMaps are useful for all sorts of things. I've used them to write little crappy assemblers,  
 making a map full of labels-to-addresses, so I can go back and patch in jump targets later.  
 I've also used them to handle keywords for compilers, using them to see if the token I just  
