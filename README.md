@@ -25,12 +25,12 @@ How do we handle so much data we can fill all of our RAM?
 We have to start with a little detour into the humble linked list.
 
 ### Chasing Pointers
-The [linked list](lists/simple_linked_list.h) is a clunky little datastructure, but we're going to need it
+The [Linked List](lists/simple_linked_list.h) is a clunky little datastructure, but we're going to need it
 for our next project!
 
 ### Ok, Ok, I Know You Wanted Arenas
 With linked lists out of the way, it's time for a more interesting allocator with some legroom.
-Our [arena](allocators/arena.h) uses a linked list to keep track of chunks of memory as it grows,
+Our [Arena](allocators/arena.h) uses a linked list to keep track of chunks of memory as it grows,
 so it can clean itself up when you're ready to collapse it.
 
 
