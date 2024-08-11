@@ -3,6 +3,8 @@
 #include <stdbool.h>
 #include <stdlib.h>
 
+#include "hashes.h"
+
 typedef struct {
     uint64_t key;
     uint64_t val;
@@ -39,15 +41,10 @@ FixedMap fixed_map_init(int elem_count) {
     return m;
 }
 
-// Fibhash. It's often bad, but it's simple
-uint64_t fixed_map_hash(uint64_t key) {
-    return key * 2654435769;
-}
-
 bool fixed_map_insert(FixedMap *m, uint64_t key, uint64_t val) {
     FixedMapEntry new_entry = {key, val};
 
-    uint64_t hash_val = fixed_map_hash(key) % m->hashes_size;
+    uint64_t hash_val = fibhash(key) % m->hashes_size;
     for (uint64_t i = 0; i < m->hashes_size; i++) {
         uint64_t cur_hash_idx = (hash_val + i) % m->hashes_size;
 
@@ -71,7 +68,7 @@ bool fixed_map_insert(FixedMap *m, uint64_t key, uint64_t val) {
 }
 
 bool fixed_map_get(FixedMap *m, uint64_t key, uint64_t *result) {
-    uint64_t hash_val = fixed_map_hash(key) % m->hashes_size;
+    uint64_t hash_val = fibhash(key) % m->hashes_size;
     for (uint64_t i = 0; i < m->hashes_size; i++) {
         uint64_t cur_hash_idx = (hash_val + i) % m->hashes_size;
 

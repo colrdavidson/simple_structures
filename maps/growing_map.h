@@ -4,6 +4,7 @@
 #include <stdlib.h>
 
 #include "../arrays/macro_dynarr.h"
+#include "hashes.h"
 
 typedef struct {
     uint64_t key;
@@ -33,22 +34,8 @@ Map map_init(int elem_count) {
     return m;
 }
 
-// FNV-1a
-uint64_t map_hash(uint64_t key) {
-    uint64_t hash = 0xcbf29ce484222325;
-    uint64_t fnv_prime = 0x100000001b3;
-
-    char *key_buf = (char *)&key;
-    for (int i = 0; i < sizeof(key); i++) {
-        hash = hash ^ key_buf[i];
-        hash = hash * fnv_prime;
-    }
-
-    return hash;
-}
-
 void map_reinsert(Map *m, MapEntry entry, uint64_t entry_idx) {
-    uint64_t hash_val = map_hash(entry.key) % m->hashes.capacity;
+    uint64_t hash_val = fnv1a(entry.key) % m->hashes.capacity;
     for (uint64_t i = 0; i < m->hashes.capacity; i++) {
         uint64_t cur_hash_idx = (hash_val + i) % m->hashes.capacity;
         int64_t cur_hash = m->hashes.arr[cur_hash_idx];
@@ -84,7 +71,7 @@ bool map_insert(Map *m, uint64_t key, uint64_t val) {
         map_grow(m);
     }
 
-    uint64_t hash_val = map_hash(key) % m->hashes.capacity;
+    uint64_t hash_val = fnv1a(key) % m->hashes.capacity;
     for (uint64_t i = 0; i < m->hashes.capacity; i++) {
         uint64_t cur_hash_idx = (hash_val + i) % m->hashes.capacity;
 
@@ -107,7 +94,7 @@ bool map_insert(Map *m, uint64_t key, uint64_t val) {
 }
 
 bool map_get(Map *m, uint64_t key, uint64_t *result) {
-    uint64_t hash_val = map_hash(key) % m->hashes.capacity;
+    uint64_t hash_val = fnv1a(key) % m->hashes.capacity;
     for (uint64_t i = 0; i < m->hashes.capacity; i++) {
         uint64_t cur_hash_idx = (hash_val + i) % m->hashes.capacity;
 

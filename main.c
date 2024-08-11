@@ -3,6 +3,7 @@
 #include <stdbool.h>
 
 #include "allocators/arena.h"
+#include "maps/fixed_set.h"
 #include "maps/fixed_map.h"
 #include "maps/growing_map.h"
 #include "arrays/dynarr.h"
@@ -25,6 +26,39 @@ void test_arena(void) {
 
     printf("Freeing our arena\n");
     arena_free(&a);
+
+    printf("\n");
+}
+
+void test_fixed_set(void) {
+    printf("=== FIXED SET TEST ===\n");
+    FixedSet s = fixed_set_init(64);
+
+    fixed_set_insert(&s, "Hello");
+    fixed_set_insert(&s, "Goodbye");
+
+    if (fixed_set_contains(&s, "Hello")) {
+		printf("Looked for 'Hello' and got it\n");
+	}
+	
+    if (fixed_set_contains(&s, "Goodbye")) {
+		printf("Looked for 'Goodbye' and got it\n");
+	}
+
+	bool ok = fixed_set_contains(&s, "Hamburger");
+	if (!ok) {
+		printf("Looked for 'Hamburger' couldn't find it\n");
+	}
+
+    printf("Clearing out all our set entries\n");
+    fixed_set_clear(&s);
+
+    if (!fixed_set_contains(&s, "Goodbye")) {
+		printf("Looked for 'Goodbye' couldn't find it\n");
+	}
+
+    printf("Cleaning up after ourselves\n");
+    fixed_set_free(&s);
 
     printf("\n");
 }
@@ -151,6 +185,7 @@ void test_growing_map(void) {
 
 int main(int argc, char **argv) {
     test_arena();
+    test_fixed_set();
     test_fixed_map();
     test_dynarray();
     test_macro_dynarr();
