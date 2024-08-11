@@ -20,7 +20,7 @@ What about a map from an id to a value?
 
 
 ## Breaking out of the Box
-Ok, we can't stay in a tiny little box forever. How do we get *more* memory?  
+Ok, we can't stay in a tiny little box forever. How do we get more memory?  
 How do we handle so much data we can fill all of our RAM?  
 We have to start with a little detour into the humble linked list.  
 
@@ -57,3 +57,11 @@ parsed was a keyword, and if it was, what the right response should be.
 Another great tool in the toolbox is [String Interning](maps/intern.h).  
 String interning is great for deduplicating key strings as you parse them in from user data.
 I've used it to squash repetitive log entries, and to do function name deduplication in profilers and linkers.
+
+### Neat Little Tricks
+
+What if you want to take messages from another thread or an external device, and they don't operate exactly in sync?
+This is where a [Ring Buffer](lists/ring_buffer.h) comes to the rescue.
+These are used a ton when sending messages to and from real hardware, like buffering keyboard input for the computer
+to pick up when it gets a chance. These can grow, like ours, or be set on a fixed chunk of memory, and have the writer
+block waiting for the reader to catch up.

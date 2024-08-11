@@ -2,20 +2,20 @@
 #include <stdint.h>
 
 uint64_t fibhash(uint64_t key) {
-    return key * 2654435769;
+	return key * 2654435769;
 }
 
 uint64_t fnv1a(uint64_t key) {
-    uint64_t hash = 0xcbf29ce484222325;
-    uint64_t fnv_prime = 0x100000001b3;
+	uint64_t hash = 0xcbf29ce484222325;
+	uint64_t fnv_prime = 0x100000001b3;
 
-    char *key_buf = (char *)&key;
-    for (int i = 0; i < sizeof(key); i++) {
-        hash = hash ^ key_buf[i];
-        hash = hash * fnv_prime;
-    }
+	char *key_buf = (char *)&key;
+	for (int i = 0; i < sizeof(key); i++) {
+		hash = hash ^ key_buf[i];
+		hash = hash * fnv_prime;
+	}
 
-    return hash;
+	return hash;
 }
 
 uint32_t murmur32(void *key, uint64_t len) {

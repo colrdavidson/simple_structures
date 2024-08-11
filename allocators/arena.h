@@ -5,10 +5,12 @@
 #include <string.h>
 
 typedef struct Arena {
-    void *buffer;
-    uint64_t size;
+	void *buffer;
 	uint64_t total_size;
-    uint64_t current;
+
+	uint64_t capacity;
+	uint64_t total_capacity;
+	uint64_t current;
 
 	struct Arena *tail;
 	struct Arena *next;
@@ -19,29 +21,29 @@ typedef struct Arena {
 #define PAGE_SIZE 4096
 #define PAGE_ROUND_UP(x) (((x)) & (~(PAGE_SIZE-1)))
 
-Arena *arena_init(uint64_t size) {
-    Arena *a = (Arena *)malloc(sizeof(Arena));
-    a->size = PAGE_ROUND_UP(size);
-	a->total_size = a->size;
-    a->buffer = malloc(a->size);
-    a->current = 0;
+Arena *arena_init(uint64_t capacity) {
+	Arena *a = (Arena *)malloc(sizeof(Arena));
+	a->capacity = PAGE_ROUND_UP(capacity);
+	a->total_capacity = a->capacity;
+	a->buffer = malloc(a->capacity);
+	a->current = 0;
 
 	// Being a little tricky here.
 	// If your tail points at yourself, when you get your tail's next,
 	// it's also your next, which means the append logic is simpler
 	a->next = NULL;
 	a->tail = a;
-    return a;
+	return a;
 }
 
 void arena_grow(Arena *arena_head, uint64_t size) {
 	Arena *new_arena = (Arena *)malloc(sizeof(Arena));
 
-    new_arena->size = PAGE_ROUND_UP(size);
-    new_arena->buffer = malloc(new_arena->size);
-    new_arena->current = 0;
+	new_arena->capacity = PAGE_ROUND_UP(size);
+	new_arena->buffer = malloc(new_arena->capacity);
+	new_arena->current = 0;
 	new_arena->next = NULL;
-	arena_head->total_size += new_arena->size;
+	arena_head->total_capacity += new_arena->capacity;
 
 	// Time to slap this new arena on the tail, and patch up our previous tail
 	Arena *tmp       = arena_head->tail;
@@ -52,13 +54,14 @@ void arena_grow(Arena *arena_head, uint64_t size) {
 void *arena_alloc(Arena *arena_head, uint64_t size) {
 	Arena *cur_arena = arena_head->tail;
 
-    if ((cur_arena->current + size) > cur_arena->size) {
+	if ((cur_arena->current + size) > cur_arena->capacity) {
 		arena_grow(arena_head, size);
-    }
+	}
 
-    void *new_buffer = (void *)(cur_arena->buffer + cur_arena->current);
-    cur_arena->current += size;
-    return new_buffer;
+	void *new_buffer = (void *)(cur_arena->buffer + cur_arena->current);
+	cur_arena->current += size;
+	arena_head->total_size += size;
+	return new_buffer;
 }
 
 void *arena_realloc(Arena *arena_head, void *buffer, uint64_t old_size, uint64_t new_size) {
@@ -72,15 +75,16 @@ void arena_clear(Arena *arena_head) {
 	while (cur != NULL) {
 		Arena *tmp = cur;
 		cur = cur->next;
-		arena_head->total_size -= tmp->size;
+		arena_head->total_capacity -= tmp->capacity;
 
 		free(tmp->buffer);
 		free(tmp);
 	}
 
-    arena_head->current = 0;
+	arena_head->current = 0;
 	arena_head->tail = arena_head;
 	arena_head->next = NULL;
+	arena_head->total_size = 0;
 }
 
 void arena_free(Arena *arena_head) {
