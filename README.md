@@ -1,7 +1,7 @@
 # Simple Reference Datastructures in C
 
 This is a pile of little datastructures for reference and learning
-[main.c](main.c) runs all the little functions they expose, so it's an decent place to start
+[main.c](main.c) runs all the little functions they expose, so it's a decent place to start
 
 ## Datastructures
 - [arena.h](arena.h) is a very very simple allocator, with a fixed capacity
