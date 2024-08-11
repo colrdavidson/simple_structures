@@ -14,7 +14,7 @@ Have you heard of arenas? They've got a lot of hype, but they're really not all 
 We'll need them for things later, so why don't we start there?
 
 ### Basic Arenas
-- [arena.h](allocators/arena.h) is a very very simple allocator, with a fixed capacity
+- [fixed_arena.h](allocators/fixed_arena.h) is a very simple arena allocator, with a fixed capacity
 
 Ok, what if I want to make a list of things that grows?
 There are two common ways to do it.

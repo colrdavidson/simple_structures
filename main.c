@@ -2,7 +2,7 @@
 #include <stdint.h>
 #include <stdbool.h>
 
-#include "allocators/arena.h"
+#include "allocators/fixed_arena.h"
 #include "lists/simple_linked_list.h"
 #include "maps/fixed_set.h"
 #include "maps/fixed_map.h"
@@ -10,11 +10,11 @@
 #include "lists/simple_dynarray.h"
 #include "lists/dynarray.h"
 
-void test_arena(void) {
-    printf("=== ARENA TEST ===\n");
+void test_fixed_arena(void) {
+    printf("=== FIXED ARENA TEST ===\n");
 
-    Arena a = arena_init(64 * 1024);
-    int *array = arena_alloc(&a, sizeof(int) * 10);
+    FixedArena a = fixed_arena_init(64 * 1024);
+    int *array = fixed_arena_alloc(&a, sizeof(int) * 10);
     printf("allocating a little space, new head is %llu\n", a.current);
 
     printf("filling our new array full of data!\n");
@@ -23,10 +23,10 @@ void test_arena(void) {
     }
 
     printf("Resetting our arena\n");
-    arena_clear(&a);
+    fixed_arena_clear(&a);
 
     printf("Cleaning up after ourselves\n");
-    arena_free(&a);
+    fixed_arena_free(&a);
 
     printf("\n");
 }
@@ -222,7 +222,7 @@ void test_growing_map(void) {
 }
 
 int main(int argc, char **argv) {
-    test_arena();
+    test_fixed_arena();
 	test_simple_linked_list();
     test_fixed_set();
     test_fixed_map();

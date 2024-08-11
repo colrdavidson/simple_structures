@@ -7,17 +7,17 @@ typedef struct {
     void *buffer;
     uint64_t size;
     uint64_t current;
-} Arena;
+} FixedArena;
 
-Arena arena_init(uint64_t size) {
-    Arena a;
+FixedArena fixed_arena_init(uint64_t size) {
+    FixedArena a;
     a.buffer = malloc(size);
     a.size = size;
     a.current = 0;
     return a;
 }
 
-void *arena_alloc(Arena *a, uint64_t size) {
+void *fixed_arena_alloc(FixedArena *a, uint64_t size) {
     if (a->current + size > a->size) {
         return NULL;
     }
@@ -27,10 +27,10 @@ void *arena_alloc(Arena *a, uint64_t size) {
     return new_buffer;
 }
 
-void arena_clear(Arena *a) {
+void fixed_arena_clear(FixedArena *a) {
     a->current = 0;
 }
 
-void arena_free(Arena *a) {
+void fixed_arena_free(FixedArena *a) {
     free(a->buffer);
 }
