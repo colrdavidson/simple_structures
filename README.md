@@ -9,13 +9,15 @@ I'm putting a little house rule in place for these, so we can really use what we
 We're only going to confine malloc to our allocator dungeon as soon as possible. Scary? Yes. I know.
 No more easy memory. It's time to get our hands dirty, and get those darn bytes ourselves.
 
-- [scratch.h](allocators/scratch.h) is a scratch buffer, with a fixed capacity
+This is baby's first allocator. It's all you need to get started, even if you'll outgrow it fast.
+[scratch.h](allocators/scratch.h)
 
-What if I want to deduplicate a list of things?
-What about a map from an id to a value?
 ### Basic Sets and Maps
-- [fixed_set.h](maps/fixed_set.h) is a set for strings that can't grow
-- [fixed_map.h](maps/fixed_map.h) is a basic hashmap that can't grow
+What if I want to deduplicate a list of things?
+[fixed_set.h](maps/fixed_set.h)
+
+What about a map from an id to a value?
+[fixed_map.h](maps/fixed_map.h)
 
 
 ## Breaking out of the Box
@@ -23,13 +25,14 @@ Ok, we can't stay in a tiny little box forever. How do we get *more* memory?
 How do we handle so much data we can fill all of our RAM?
 We have to start with a little detour into the humble linked list.
 
-### The Linked List
-This is a clunky little datastructure, but it'll get us off the ground
-- [simple_linked_list.h](lists/simple_linked_list.h)
+### Chasing Pointers
+The [linked list](lists/simple_linked_list.h) is a clunky little datastructure, but we're going to need it
+for our next project!
 
-### The Growing Arena
-And now it's time for a simple allocator that'll give us some legroom
-[arena.h](allocators/arena.h) is an arena that uses a linked list of blocks to grow
+### Arena Time
+With linked lists out of the way, it's time for a more interesting allocator with some legroom
+[arena.h](allocators/arena.h) uses a linked list to keep track of chunks of memory as it grows,
+so it can clean itself up when you're ready to collapse it.
 
 
 ## Infinite Memory, Infinite New Problems
