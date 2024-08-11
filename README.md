@@ -12,10 +12,10 @@ No more easy memory. It's time to get our hands dirty, and get those darn bytes 
 The [Scratch Buffer](allocators/scratch.h) is baby's first allocator. It's all you need to get started, even if you'll outgrow it fast.
 
 ### Basic Sets and Maps
-What if I want to deduplicate a list of things?
+What if I want to deduplicate a list of things, with very few variations?
 Try a [Fixed HashSet](maps/fixed_set.h)
 
-What about a map from an id to a value?
+What about a map from a small set of ids to values?
 [Fixed HashMap](maps/fixed_map.h) Time
 
 
