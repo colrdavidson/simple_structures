@@ -4,15 +4,18 @@
 #include <assert.h>
 
 #include "allocators/scratch.h"
-#include "allocators/arena.h"
-#include "lists/simple_linked_list.h"
 #include "maps/fixed_set.h"
 #include "maps/fixed_map.h"
+#include "lists/simple_linked_list.h"
+
+#include "allocators/arena.h"
 #include "maps/growing_map.h"
 #include "lists/simple_dynarray.h"
 #include "lists/dynarray.h"
+
 #include "maps/intern.h"
 #include "lists/ring_buffer.h"
+#include "lists/stack.h"
 
 void test_scratch(ScratchAlloc *scr) {
 	printf("=== SCRATCH TEST ===\n");
@@ -270,6 +273,32 @@ void test_ring_buffer(Arena *a) {
 	printf("\n");
 }
 
+void test_stack(Arena *a) {
+	printf("=== STACK TEST ===\n");
+	Stack stack = stack_init(a, 8);
+
+	for (int64_t i = 1; i < 10; i++) {
+		printf("Pushing %lld\n", i);
+		stack_push(&stack, (void *)i);
+	}
+
+	for (int64_t i = 1; i < 10; i++) {
+		int64_t v = (int64_t)stack_pop(&stack);
+		printf("Popped %lld\n", v);
+	}
+
+	printf("Arena bytes used before: %lld\n", a->total_size);
+	for (int64_t i = 0; i < 10; i++) {
+		stack_push(&stack, (void *)i);
+		stack_pop(&stack);
+	}
+	printf("Arena bytes used after: %lld\n", a->total_size);
+
+	printf("Cleaning up after ourselves\n");
+	arena_clear(a);
+	printf("\n");
+}
+
 int main(int argc, char **argv) {
 	ScratchAlloc scr = scratch_init(8 * 1024);
 	printf("~~ Hello Memory, it's me the ScratchAllocator! ~~\n\n");
@@ -295,4 +324,5 @@ int main(int argc, char **argv) {
 
 	test_intern(a, string_block);
 	test_ring_buffer(a);
+	test_stack(a);
 }

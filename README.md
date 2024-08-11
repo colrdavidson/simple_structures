@@ -66,3 +66,7 @@ This is where a [Ring Buffer](lists/ring_buffer.h) comes to the rescue.
 These are used a ton when sending messages to and from real hardware, like buffering keyboard input for the computer
 to pick up when it gets a chance. These can grow, like ours, or be set on a fixed chunk of memory, and have the writer
 block waiting for the reader to catch up.
+
+You'll notice that the Ring Buffer is FIFO (First-In, First-Out). What if you wanted the opposite?
+[Stacks](lists/stack.h) do that. Stacks are LIFO (Last-In, First-Out), meaning when you pop from a stack,
+you get the most recent thing you just put in.
