@@ -54,6 +54,6 @@ making a map full of labels-to-addresses, so I can go back and patch in jump tar
 I've also used them to handle keywords for compilers, using them to see if the token I just
 parsed was a keyword, and if it was, what the right response should be.
 
-Another great tool in the toolbox is a [String Interner](maps/intern.h).  
-String interners are great for deduplicating key strings as you parse them in from user data.
-I've used them to squash repetitive log entries, and to do function name deduplication in profilers and linkers.
+Another great tool in the toolbox is [String Interning](maps/intern.h).  
+String interning is great for deduplicating key strings as you parse them in from user data.
+I've used it to squash repetitive log entries, and to do function name deduplication in profilers and linkers.
