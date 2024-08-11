@@ -10,14 +10,14 @@ We're only going to confine malloc to our allocator dungeon as soon as possible.
 No more easy memory. It's time to get our hands dirty, and get those darn bytes ourselves.
 
 This is baby's first allocator. It's all you need to get started, even if you'll outgrow it fast.
-[scratch.h](allocators/scratch.h)
+[Scratch Allocator](allocators/scratch.h)
 
 ### Basic Sets and Maps
 What if I want to deduplicate a list of things?
-[fixed_set.h](maps/fixed_set.h)
+Try a [HashSet](maps/fixed_set.h)
 
 What about a map from an id to a value?
-[fixed_map.h](maps/fixed_map.h)
+[HashMap](maps/fixed_map.h) Time
 
 
 ## Breaking out of the Box
@@ -44,9 +44,8 @@ Now that we have growing memory, we can start into the real meat and potatoes of
 [simple_dynarray.h](lists/simple_dynarray.h) makes a decent first pass.
 It's easy to read, but not super useful unless we want to write a lot of them by hand
 
-And with a little macro magic, we've got something we can use on a real project, [dynarray.h](lists/dynarray.h)
+With a little macro magic, we've got something we can use on a real project, [dynarray.h](lists/dynarray.h)
 
-### Map and Sets
-Don't forget, we've got a hashmap to get back to.
-With our newfound memory growing potential, we can finally make ourselves a map with legs
-Time to check out [growing_map.h](maps/growing_map.h)
+### Map and Sets Part 2
+Remember when we made our first maps? They were pretty limited, right?
+Now that we can grow, we can finally make ourselves a real [HashMap](maps/growing_map.h)
