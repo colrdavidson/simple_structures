@@ -70,6 +70,10 @@ These are used a ton when sending messages to and from real hardware, like buffe
 to pick up when it gets a chance. These can grow, like ours, or be set on a fixed chunk of memory, and have the writer
 block waiting for the reader to catch up.
 
-You'll notice that the Ring Buffer is FIFO (First-In, First-Out). What if you wanted the opposite?
-[Stacks](lists/stack.h) do that. Stacks are LIFO (Last-In, First-Out), meaning when you pop from a stack,
+You'll notice that the Ring Buffer is FIFO (First-In, First-Out).
+If you push in `0, 1, 2`, you'll get `0, 1, 2` out.
+
+What if you wanted the opposite? [Stacks](lists/stack.h) do that.
+Stacks are LIFO (Last-In, First-Out), when you pop from a stack,
 you get the most recent thing you just put in.
+If you push in `0, 1, 2`, you'll get `2, 1, 0` out.
