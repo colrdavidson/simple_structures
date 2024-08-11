@@ -3,11 +3,12 @@
 #include <stdbool.h>
 
 #include "allocators/arena.h"
+#include "lists/simple_linked_list.h"
 #include "maps/fixed_set.h"
 #include "maps/fixed_map.h"
 #include "maps/growing_map.h"
-#include "arrays/simple_dynarray.h"
-#include "arrays/dynarray.h"
+#include "lists/simple_dynarray.h"
+#include "lists/dynarray.h"
 
 void test_arena(void) {
     printf("=== ARENA TEST ===\n");
@@ -24,10 +25,47 @@ void test_arena(void) {
     printf("Resetting our arena\n");
     arena_clear(&a);
 
-    printf("Freeing our arena\n");
+    printf("Cleaning up after ourselves\n");
     arena_free(&a);
 
     printf("\n");
+}
+
+void test_simple_linked_list(void) {
+    printf("=== SIMPLE LINKED LIST TEST ===\n");
+	printf("creating 0\n");
+    Node *list_head = simple_linked_list_init(0);
+
+	for (int i = 1; i < 4; i++) {
+		printf("appending %d\n", i);
+		simple_linked_list_append(&list_head, i);
+	}
+	simple_linked_list_print_list(list_head);
+
+	for (int i = 0; i < 5; i++) {
+		uint64_t ret = simple_linked_list_pop(&list_head);
+		if (list_head != NULL) {
+			printf("popped %llu\n", ret);
+		} else {
+			printf("list is empty!\n");
+		}
+	}
+	simple_linked_list_print_list(list_head);
+
+	printf("appending 8\n");
+	simple_linked_list_append(&list_head, 8);
+
+	for (int i = 0; i < 3; i++) {
+		printf("inserting %d after head\n", i);
+		simple_linked_list_insert_after(&list_head, 0, i);
+	}
+
+	simple_linked_list_print_list(list_head);
+
+    printf("Cleaning up after ourselves\n");
+	simple_linked_list_free(&list_head);
+
+	printf("\n");
 }
 
 void test_fixed_set(void) {
@@ -185,6 +223,7 @@ void test_growing_map(void) {
 
 int main(int argc, char **argv) {
     test_arena();
+	test_simple_linked_list();
     test_fixed_set();
     test_fixed_map();
     test_simple_dynarray();

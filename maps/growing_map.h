@@ -3,7 +3,7 @@
 #include <stdbool.h>
 #include <stdlib.h>
 
-#include "../arrays/dynarray.h"
+#include "../lists/dynarray.h"
 #include "hashes.h"
 
 typedef struct {
