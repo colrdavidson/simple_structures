@@ -9,20 +9,22 @@
         type *arr;         \
         uint64_t size;     \
         uint64_t capacity; \
+		Arena *alloc;      \
     }
 
 #define elem_size(dyn) sizeof(*((dyn)->arr))
-#define dyn_init(dyn, start_capacity)                           \
-    do {                                                        \
-        (dyn)->capacity = (start_capacity);                     \
-        (dyn)->size = 0;                                        \
-        (dyn)->arr = malloc(elem_size(dyn) * (start_capacity)); \
+#define dyn_init(allo, dyn, start_capacity)                                        \
+    do {                                                                           \
+        (dyn)->capacity = (start_capacity);                                        \
+        (dyn)->size = 0;                                                           \
+		(dyn)->alloc = (allo);                                                     \
+        (dyn)->arr = arena_alloc((dyn)->alloc, elem_size(dyn) * (start_capacity)); \
     } while (0)
 
-#define dyn_resize(dyn, new_size)                                      \
-    do {                                                               \
-        (dyn)->capacity = (new_size);                                  \
-        (dyn)->arr = realloc((dyn)->arr, elem_size(dyn) * (new_size)); \
+#define dyn_resize(dyn, new_size)                                                                                            \
+    do {                                                                                                                     \
+        (dyn)->arr = arena_realloc((dyn)->alloc, (dyn)->arr, elem_size(dyn) * (dyn)->capacity, elem_size(dyn) * (new_size)); \
+        (dyn)->capacity = (new_size);                                                                                        \
     } while (0)
 
 #define dyn_append(dyn, elem)                        \
@@ -36,10 +38,3 @@
 
 
 #define dyn_get(dyn, idx) (dyn)->arr[(idx)]
-
-#define dyn_free(dyn)        \
-    do {                     \
-        free((dyn)->arr);    \
-        (dyn)->size = 0;     \
-        (dyn)->capacity = 0; \
-    } while (0)

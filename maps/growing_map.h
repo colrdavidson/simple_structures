@@ -14,18 +14,28 @@ typedef struct {
 typedef struct {
     DynArray(MapEntry) entries;
     DynArray(int64_t)  hashes;
+
+	Arena *alloc;
 } Map;
 
-Map map_init(int elem_count) {
+void map_print_entries(Map *m) {
+	for (int i = 0; i < m->entries.size; i++) {
+		MapEntry e = m->entries.arr[i];
+		printf("%llu - %llu\n", e.key, e.val);
+	}
+}
+
+Map map_init(Arena *a, int elem_count) {
     Map m;
+	m.alloc = a;
 
     int start_count = elem_count;
     if (start_count == 0) {
         start_count = 8;
     }
 
-    dyn_init(&m.entries, start_count);
-    dyn_init(&m.hashes, start_count);
+    dyn_init(a, &m.entries, start_count);
+    dyn_init(a, &m.hashes, start_count);
 
     // Set the whole hashmap to empty. -1 means the slot hasn't been filled yet
     for (int i = 0; i < m.hashes.capacity; i++) {
@@ -64,6 +74,7 @@ void map_grow(Map *m) {
 
 bool map_insert(Map *m, uint64_t key, uint64_t val) {
     MapEntry new_entry = {key, val};
+
 
     // Grow before we insert, so we always have space for our hash
     int64_t next_resize_window = (3 * m->hashes.capacity) / 4;
@@ -121,9 +132,4 @@ void map_clear(Map *m) {
         m->hashes.arr[i] = -1;
     }
     m->entries.size = 0;
-}
-
-void map_free(Map *m) {
-    dyn_free(&m->entries);
-    dyn_free(&m->hashes);
 }

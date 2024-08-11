@@ -3,6 +3,7 @@
 #include <stdbool.h>
 #include <stdlib.h>
 
+#include "../allocators/scratch.h"
 #include "hashes.h"
 
 typedef struct {
@@ -17,9 +18,11 @@ typedef struct {
 
     int64_t *hashes;
     uint64_t hashes_size;
+
+	ScratchAlloc *scr;
 } FixedMap;
 
-FixedMap fixed_map_init(int elem_count) {
+FixedMap fixed_map_init(ScratchAlloc *scr, int elem_count) {
     FixedMap m;
 
     int start_count = elem_count;
@@ -27,10 +30,10 @@ FixedMap fixed_map_init(int elem_count) {
         start_count = 8;
     }
 
-    m.hashes = (int64_t *)malloc(sizeof(int64_t) * start_count);
+    m.hashes = (int64_t *)scratch_alloc(scr, sizeof(int64_t) * start_count);
     m.hashes_size = start_count;
 
-    m.entries = (FixedMapEntry *)malloc(sizeof(FixedMapEntry) * start_count);
+    m.entries = (FixedMapEntry *)scratch_alloc(scr, sizeof(FixedMapEntry) * start_count);
     m.entries_size = 0;
     m.entries_capacity = start_count;
 
@@ -95,9 +98,4 @@ void fixed_map_clear(FixedMap *m) {
         m->hashes[i] = -1;
     }
     m->entries_size = 0;
-}
-
-void fixed_map_free(FixedMap *m) {
-    free(m->entries);
-    free(m->hashes);
 }
