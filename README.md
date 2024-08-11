@@ -21,13 +21,13 @@ There are two common ways to do it.
 ### The Dynamic Array
 (or vector if you're a weird c++ person)
 
-- [simple_dynarray.h](arrays/simple_dynarray.h) is a very straightforward dynamic array
-- [dynarray.h](arrays/dynarray.h) is a more useful dynamic array that you can use for arbitrary types
+- [simple_dynarray.h](lists/simple_dynarray.h) is a very straightforward dynamic array
+- [dynarray.h](lists/dynarray.h) is a more useful dynamic array that you can use for arbitrary types
 
 ### The Linked List
 This is a little more clunky than our friend the dynamic array, but they have their uses
 
-- [simple_linked_list.h](arrays/simple_linked_list.h) as simple a linked list as we can get
+- [simple_linked_list.h](lists/simple_linked_list.h) as simple a linked list as we can get
 
 And now that we've got the basics, what can we do with those?
 ### Map and Sets
