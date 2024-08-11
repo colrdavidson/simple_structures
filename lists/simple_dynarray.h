@@ -25,7 +25,7 @@ void simple_dyn_append(SimpleDynArray *arr, uint64_t elem) {
     if (arr->size + 1 > arr->capacity) {
 		uint64_t old_capacity = arr->capacity;
         arr->capacity *= 2;
-        arr->buffer = arena_realloc(arr->alloc, arr->buffer, old_capacity, arr->capacity);
+        arr->buffer = arena_realloc(arr->alloc, arr->buffer, old_capacity * sizeof(uint64_t), arr->capacity * sizeof(uint64_t));
     }
 
     arr->buffer[arr->size] = elem;
