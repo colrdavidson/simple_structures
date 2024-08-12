@@ -4,13 +4,36 @@
 #include <stdlib.h>
 #include <string.h>
 
-typedef struct Arena {
-	void *buffer;
-	uint64_t total_size;
+// This arena is laid out in memory
+// with data immediately after each Arena Header
+// ----------------------------------------------
+// struct Arena {
+//     ....
+//     tail -----------|
+//     next -------|   |
+// }               |   |
+// ...<data>       |   |
+//                 |   |
+// struct Arena {<-|   |
+//     ....            |
+//     tail ---------| |
+//     next -------| | |
+// }               | | |
+// ...<data>       | | |
+//                 | | |
+// struct Arena { <----|
+// ^    ....
+// |--- tail
+//      next = NULL
+// }
+// ...<data>
 
-	uint64_t capacity;
-	uint64_t total_capacity;
+typedef struct Arena {
 	uint64_t current;
+	uint64_t capacity;
+
+	uint64_t total_size;
+	uint64_t total_capacity;
 
 	struct Arena *tail;
 	struct Arena *next;
@@ -22,11 +45,13 @@ typedef struct Arena {
 #define PAGE_ROUND_UP(x) (((x)) & (~(PAGE_SIZE-1)))
 
 Arena *arena_init(uint64_t capacity) {
-	Arena *a = (Arena *)malloc(sizeof(Arena));
-	a->capacity = PAGE_ROUND_UP(capacity);
+	uint64_t chunk_size = PAGE_ROUND_UP(sizeof(Arena) + capacity);
+	Arena *a = (Arena *)malloc(chunk_size);
+
+	a->capacity = chunk_size - sizeof(Arena);
 	a->total_capacity = a->capacity;
-	a->buffer = malloc(a->capacity);
 	a->current = 0;
+	a->total_size = 0;
 
 	// Being a little tricky here.
 	// If your tail points at yourself, when you get your tail's next,
@@ -37,10 +62,10 @@ Arena *arena_init(uint64_t capacity) {
 }
 
 void arena_grow(Arena *arena_head, uint64_t size) {
-	Arena *new_arena = (Arena *)malloc(sizeof(Arena));
+	uint64_t chunk_size = PAGE_ROUND_UP(sizeof(Arena) + size);
+	Arena *new_arena = (Arena *)malloc(chunk_size);
 
-	new_arena->capacity = PAGE_ROUND_UP(size);
-	new_arena->buffer = malloc(new_arena->capacity);
+	new_arena->capacity = chunk_size - sizeof(Arena);
 	new_arena->current = 0;
 	new_arena->next = NULL;
 	arena_head->total_capacity += new_arena->capacity;
@@ -58,7 +83,7 @@ void *arena_alloc(Arena *arena_head, uint64_t size) {
 		arena_grow(arena_head, size);
 	}
 
-	void *new_buffer = (void *)(cur_arena->buffer + cur_arena->current);
+	void *new_buffer = (void *)((cur_arena + sizeof(Arena)) + cur_arena->current);
 	cur_arena->current += size;
 	arena_head->total_size += size;
 	return new_buffer;
@@ -77,7 +102,6 @@ void arena_clear(Arena *arena_head) {
 		cur = cur->next;
 		arena_head->total_capacity -= tmp->capacity;
 
-		free(tmp->buffer);
 		free(tmp);
 	}
 
@@ -89,6 +113,5 @@ void arena_clear(Arena *arena_head) {
 
 void arena_free(Arena *arena_head) {
 	arena_clear(arena_head);
-	free(arena_head->buffer);
 	free(arena_head);
 }

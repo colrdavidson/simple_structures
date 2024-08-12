@@ -321,8 +321,10 @@ int main(int argc, char **argv) {
 
 	printf("~~ Now We Have Two Arenas ~~\n\n");
 	Arena *string_block = arena_init(8 * 1024);
-
 	test_intern(a, string_block);
+	arena_free(string_block);
+
+	printf("~~ Back To Just One ~~\n\n");
 	test_ring_buffer(a);
 	test_stack(a);
 }
