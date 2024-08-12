@@ -312,22 +312,27 @@ void test_pool(Arena *a) {
 	uint64_t *slot_2 = pool_get(p);
 	printf("Got a slot 2 -- %p\n", slot_2);
 
+	uint64_t *slot_3 = pool_get(p);
+	printf("Got a slot 3 -- %p\n", slot_3);
+
 	pool_free(p, slot_1);
 	printf("Freed slot 1 -- %p\n", slot_1);
 
-	uint64_t *slot_3 = pool_get(p);
-	printf("Got a slot 3 -- %p\n", slot_3);
+	uint64_t *slot_4 = pool_get(p);
+	printf("Got a slot 4 -- %p\n", slot_4);
 
 	pool_free(p, slot_2);
 	printf("Freed slot 2 -- %p\n", slot_2);
 
-	uint64_t *slot_4 = pool_get(p);
-	printf("Got a slot 4 -- %p\n", slot_4);
+	uint64_t *slot_5 = pool_get(p);
+	printf("Got a slot 5 -- %p\n", slot_5);
 
 	pool_free(p, slot_3);
 	printf("Freed slot 3 -- %p\n", slot_3);
 	pool_free(p, slot_4);
 	printf("Freed slot 4 -- %p\n", slot_4);
+	pool_free(p, slot_5);
+	printf("Freed slot 5 -- %p\n", slot_5);
 
 	printf("Cleaning up after ourselves\n");
 	arena_clear(a);
