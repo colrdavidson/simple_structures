@@ -72,7 +72,7 @@ One of the big places it shines is in our next project, a growing allocator call
 
 ### Arenas
 The [Arena](allocators/arena.h) looks a bit like our Scratch Buffer, but it uses that spiffy new linked-list to append
-new chunks of memory to itself, and when it's time to clean up it has a lovely list of all the chunks it needs to free.
+new chunks of memory to itself, and when it's time to clean up, it has a lovely list of all the chunks it needs to free.
 
 
 ## A New Era of Memory Growth
