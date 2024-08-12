@@ -66,8 +66,9 @@ It's time to take a little detour into the humble linked list.
 
 ### Linked Lists
 The [Linked List](lists/simple_linked_list.h) is a clunky little guy, but it shows up in some very odd places.  
-It is used heavily in the linux kernel, it can be made lock-free, and it even sees use as a growable list in languages
-like Objective-C's NSArray, although it's not very good for it. It also shows up in our next datastructure, the Arena.
+It is used heavily in the linux kernel, it can be made lock-free, and it even sees use as a general purpose dynamic
+array in Objective-C's NSArray, although it's a bit of a memory hog for that application.
+One of the big places it shines is in our next project, a growing allocator called an Arena.
 
 ### Arenas
 The [Arena](allocators/arena.h) looks a bit like our Scratch Buffer, but it uses that spiffy new linked-list to append
@@ -81,23 +82,20 @@ Now that we have space we can grow, we can start into the real meat and potatoes
 (or vector if you're a weird c++ person)
 
 We'll start with something I use *constantly*.
-The [Dynamic Array](lists/simple_dynarray.h) is an array that grows as you push things into it.  
-This one is a little limited though, what if I need one that does more than ints?  
-With a little macro magic, we've got something we can use for real: [Dynamic Array V2](lists/dynarray.h)
+The [Dynamic Array](lists/simple_dynarray.h) is an array that expands as you push things into it.  
+This one is a little limited, what if we need one that does more than ints?  
+With a little C macro magic, we've got something we can use for real: [Dynamic Array V2](lists/dynarray.h)
 
 ### Map and Sets Part 2
 
-Dynamic Arrays open up all sorts of comfy, cozy doors for us.  
-We can finally make ourselves a real [HashMap](maps/growing_map.h)!  
+Dynamic Arrays open up all sorts of doors for us.  
+We can finally make ourselves a [HashMap](maps/growing_map.h) that can grow!  
+Now we can handle big datasets, as many IDs and tokens as our memory can fit.
 
-HashMaps are useful for all sorts of things. I've used them to write little crappy assemblers,  
-making a map full of labels-to-addresses, so I can go back and patch in jump targets later.  
-I've also used them to handle keywords for compilers, using them to see if the token I just  
-parsed was a keyword, and if it was, what the right response should be.  
-
-Next up, [String Interning](maps/intern.h).  
-String interning is great for deduplicating key strings as you parse them in from user data.  
-I've used it to squash repetitive log entries, and to do function name deduplication in profilers and linkers.
+But, what if we're starting to see a lot of repeat tokens, and they're eating up all of our space?
+Remember the HashSet? Time to use them for something interesting, [String Interning](maps/intern.h).
+Interning is great for squashing down big repetitive lists of function names in profilers and linkers, and
+for gathering all your unique strings in one place so you can compress them later.
 
 ### Neat Little Tricks
 
