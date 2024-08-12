@@ -1,8 +1,12 @@
-# Simple Reference Datastructures in C
+# Simple Datastructures in C
 
-This is a pile of useful little datastructures I've written and collected over the years.
+This is a pile of datastructures I've used for one project or another. They're all useful and worth knowing.
+If you've heard of these mythical things, and assumed they were beyond the reach of mere mortals, don't be.
+I learned them the hard way, one project at a time, and each of them gave me a new way of looking at code and data.
+All of these should be in your go-to toolbox.
 
-# Table Of Contents
+
+## Table Of Contents
 - [main.c](main.c) home of the tests
 
 ### Allocators
@@ -42,27 +46,32 @@ We'll start nice and simple with the [Scratch Buffer](allocators/scratch.h).
 It's all you need to get started, even if we'll outgrow it fast.
 
 ### Basic Sets and Maps
-What if we want to deduplicate a list of things, with very few variations?
-Try a [Fixed HashSet](maps/fixed_set.h)
+There's many ways to write a hashmap, hashmaps are like hammers. You've got mallets, ball peens,  
+claw hammers, sledgehammers, etc, etc, and all of them have their uses. Step one is knowing which end  
+you hit with though. We're going to start with very simplified ones, and then work up from there.
 
-What about a map from a small set of ids to values?
-[Fixed HashMap](maps/fixed_map.h) Time
+[HashSets](maps/fixed_set.h) are one of the simplest "probabalistic" datastructures, and look a lot like  
+a hashmap without the "associativity" (the "map" between a key and a value).  
+They can be used for classification, for questions like "Is this token a keyword in my language?",  
+or "Have I seen this person before?".
 
+[HashMap](maps/fixed_map.h) allow you to map keys to values, which can be handy for counting the kinds of strings in text,  
+"how many unique words are there in this book?", or to map between ids and data, `map["dogs"] = {"pugs", "labs", "boxers"}`.  
+Hashmaps are reasonably fast for storage, and very fast for lookup, as long as your map doesn't get too full.
 
 ## Growing Pains
-Ok, we can't stay in a tiny little box forever. How do we get more memory?  
-How do we handle so much data we can fill all of our RAM?  
-We have to take a little detour into the humble linked list.  
+So, we can't stay in a tiny little box forever. How do we get more memory? What if we don't want our hashmaps  
+to get full, or have to make guesses ahead of time about how much we'll need?  
+It's time to take a little detour into the humble linked list.
 
 ### Linked Lists
-The [Linked List](lists/simple_linked_list.h) is a clunky little guy, but it shows up in some odd places.  
-It's used heavily in the linux kernel, it can be made lock-free, and it occasionally shows up as  
-a way to represent a growable list. It also shows up in our next datastructure, the Arena.
+The [Linked List](lists/simple_linked_list.h) is a clunky little guy, but it shows up in some very odd places.  
+It is used heavily in the linux kernel, it can be made lock-free, and it even sees use as a growable list in languages
+like Objective-C's NSArray, although it's not very good for it. It also shows up in our next datastructure, the Arena.
 
 ### Arenas
-With linked lists out of the way, it's time for allocators part 2.  
-The [Arena](allocators/arena.h) uses that spiffy new linked-list idea to append new chunks of memory to itself,  
-and when it's time to clean up it can just walk the nodes to clean up.
+The [Arena](allocators/arena.h) looks a bit like our Scratch Buffer, but it uses that spiffy new linked-list to append
+new chunks of memory to itself, and when it's time to clean up it has a lovely list of all the chunks it needs to free.
 
 
 ## A New Era of Memory Growth
