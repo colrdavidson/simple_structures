@@ -42,10 +42,11 @@ typedef struct Arena {
 // We're going to grab and align to at least a whole page
 // No sense being super stingy, we are the allocator after all
 #define PAGE_SIZE 4096
-#define PAGE_ROUND_UP(x) (((x)) & (~(PAGE_SIZE-1)))
+#define DIV_ROUND_UP(x, y) (((x) + (y) - 1) / (y))
+#define PAGE_ROUND_UP(x) (PAGE_SIZE * DIV_ROUND_UP((x), PAGE_SIZE))
 
-Arena *arena_init(uint64_t capacity) {
-	uint64_t chunk_size = PAGE_ROUND_UP(sizeof(Arena) + capacity);
+Arena *arena_init(void) {
+	uint64_t chunk_size = PAGE_ROUND_UP(sizeof(Arena) + PAGE_SIZE);
 	Arena *a = (Arena *)malloc(chunk_size);
 
 	a->capacity = chunk_size - sizeof(Arena);

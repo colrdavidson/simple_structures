@@ -17,6 +17,8 @@
 #include "lists/ring_buffer.h"
 #include "lists/stack.h"
 
+#include "allocators/pool.h"
+
 void test_scratch(ScratchAlloc *scr) {
 	printf("=== SCRATCH TEST ===\n");
 
@@ -299,6 +301,39 @@ void test_stack(Arena *a) {
 	printf("\n");
 }
 
+void test_pool(Arena *a) {
+	printf("=== POOL TEST ===\n");
+
+	Pool *p = pool_init(a, 4096, sizeof(uint64_t));
+
+	uint64_t *slot_1 = pool_get(p);
+	printf("Got a slot 1 -- %p\n", slot_1);
+
+	uint64_t *slot_2 = pool_get(p);
+	printf("Got a slot 2 -- %p\n", slot_2);
+
+	pool_free(p, slot_1);
+	printf("Freed slot 1 -- %p\n", slot_1);
+
+	uint64_t *slot_3 = pool_get(p);
+	printf("Got a slot 3 -- %p\n", slot_3);
+
+	pool_free(p, slot_2);
+	printf("Freed slot 2 -- %p\n", slot_2);
+
+	uint64_t *slot_4 = pool_get(p);
+	printf("Got a slot 4 -- %p\n", slot_4);
+
+	pool_free(p, slot_3);
+	printf("Freed slot 3 -- %p\n", slot_3);
+	pool_free(p, slot_4);
+	printf("Freed slot 4 -- %p\n", slot_4);
+
+	printf("Cleaning up after ourselves\n");
+	arena_clear(a);
+	printf("\n");
+}
+
 int main(int argc, char **argv) {
 	ScratchAlloc scr = scratch_init(8 * 1024);
 	printf("~~ Hello Memory, it's me the ScratchAllocator! ~~\n\n");
@@ -311,7 +346,7 @@ int main(int argc, char **argv) {
 	printf("~~ Ugh, that's a lot of work... Time for retirement! ~~ \n\n");
 	scratch_free(&scr);
 
-	Arena *a = arena_init(8 * 1024);
+	Arena *a = arena_init();
 	printf("~~ WELCOME TO THE THUNDERDOME! ~~\n\n");
 	test_arena(a);
 
@@ -320,11 +355,13 @@ int main(int argc, char **argv) {
 	test_growing_map(a);
 
 	printf("~~ Now We Have Two Arenas ~~\n\n");
-	Arena *string_block = arena_init(8 * 1024);
+	Arena *string_block = arena_init();
 	test_intern(a, string_block);
 	arena_free(string_block);
 
 	printf("~~ Back To Just One ~~\n\n");
 	test_ring_buffer(a);
 	test_stack(a);
+
+	test_pool(a);
 }

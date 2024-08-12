@@ -12,11 +12,13 @@ typedef struct {
 // We're going to grab at least a whole page
 // No sense being super stingy, we are the allocator after all
 #define PAGE_SIZE 4096
-#define PAGE_ROUND_UP(x) (((x)) & (~(PAGE_SIZE-1)))
+#define DIV_ROUND_UP(x, y) (((x) + (y) - 1) / (y))
+#define PAGE_ROUND_UP(x) (PAGE_SIZE * DIV_ROUND_UP((x), PAGE_SIZE))
 
 ScratchAlloc scratch_init(uint64_t size) {
 	ScratchAlloc a;
 	a.size = PAGE_ROUND_UP(size);
+	printf("%llu -> %llu\n", size, a.size);
 	a.buffer = malloc(a.size);
 	a.current = 0;
 	return a;

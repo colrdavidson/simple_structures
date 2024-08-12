@@ -12,6 +12,7 @@ All of these should be in your go-to toolbox.
 ### Allocators
 - [Scratch Buffer](allocators/scratch.h)
 - [Arena](allocators/arena.h)
+- [Pool](allocators/pool.h)
 
 ### Lists
 - [Simple Dynamic Array](lists/simple_dynarray.h)
@@ -25,6 +26,7 @@ All of these should be in your go-to toolbox.
 - [Fixed HashMap](maps/fixed_map.h)
 - [Growing HashMap](maps/growing_map.h)
 - [String Interner](maps/intern.h)
+- [Bitset](allocators/pool.h)
 
 # A Random Narrative Walk
 
@@ -113,3 +115,22 @@ and Queues are FIFO (First-In, First-Out).
 What if you wanted the opposite ordering? [Stacks](lists/stack.h) do that.  
 Stacks are LIFO (Last-In, First-Out). 
 > If you push in `0, 1, 2`, you'll get `2, 1, 0` out.
+
+## Fragmentation Is Hell
+So, if you've been following along so far, you may have noticed something important.
+When you allocate a big space in our arena, any space leftover in the block before it becomes unaccessible until we clear the whole arena.
+
+Not so great. You'll also have noticed another important tidbit...
+We don't have a real free for any of the allocators we've written yet!
+
+All that stale memory that we can't get to, is what we call "internal fragmentation".
+
+I"m a little sick of arenas, so we'll start with an allocator that's close to ideal for internal fragmentation. The [Pool Allocator](allocators/pool.h).
+To manage our allocs and frees, our pool allocator converts the pointer it passes out to an index into an internal bitset,
+which uses a bit per slot to track whether the slot has been filled.
+
+Bitsets give you the ability to track state in a very efficient compressed form, in our case, we're using 1 bit per 64-bit element,
+so we can track a 4096-byte page worth of slots in only 64 bytes. The larger the unit in our bitset, the more efficient the tracking gets.
+
+Our little pool allocator is solid for managing small allocations that need to be created and destroyed frequently,
+which makes it a great allocator for small linked list or tree nodes.
