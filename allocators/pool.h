@@ -40,30 +40,40 @@ void *pool_get(Pool *p) {
 
 	// Scanning our bitset for free chunks
 	uint64_t full = ~0;
+	uint64_t empty = 0;
+
 	for (uint64_t i = 0; i < p->bitset_size; i++) {
 		uint64_t chunk = bitset[i];
 		if (chunk == full) {
 			continue;
 		}
 
-		int j = 0;
-		// Start searching for the first available slot (a 0) from MSB to LSB
-		// (the bit that makes number big -> to the bit that makes number least big)
-		for (; j < 64; j++) {
-			uint64_t bit = (chunk << j) >> 63;
-			if (bit != 0) {
-				continue;
-			}
-			
-			// Ok, we found a slot, time to set the bit we grabbed
-			uint64_t mask = 1ull << (63 - j);
+		// Handle the empty case special, because count leading zeros gets weird with a 0 val
+		if (chunk == empty) {
+			uint64_t mask = 1ull << 63;
 			bitset[i] = chunk ^ mask;
-			break;
+
+			uint64_t offset = ((i * 64) * p->unit_size);
+			return (void *)(data_start + offset);
 		}
+
+		// This is where the magic happens
+		// if chunk = 0b0100
+		//   ~chunk = 0b1011
+		// count-leading-zeros returns 0
+		// which means there's a space in slot 0
+		//
+		// if chunk = 0b1100
+		//   ~chunk = 0b0011
+		// count-leading-zeros returns 2
+		// which means there's a space in slot 2
+		uint64_t bit_slot = __builtin_clzll(~chunk);
+		uint64_t mask = 1ull << (63 - bit_slot);
+		bitset[i] = chunk ^ mask;
 
 		// Each chunk in the bitset represents 64 slots of unit_size
 		// Each bit is a unit_size slot
-		uint64_t offset = ((i * 64) * p->unit_size) + (j * p->unit_size);
+		uint64_t offset = ((i * 64) * p->unit_size) + (bit_slot * p->unit_size);
 		return (void *)(data_start + offset);
 	}
 
@@ -84,7 +94,7 @@ void pool_free(Pool *p, void *slot) {
 	// Figure out where in our bitset things should live
 	uint64_t offset = (uint64_t)(slot_bytes - data_start);
 	uint64_t chunk_idx = (offset / p->unit_size) / 64;
-	uint64_t bit_idx = (offset / p->unit_size) % 64;
+	uint64_t bit_idx   = (offset / p->unit_size) % 64;
 
 	uint64_t chunk = bitset[chunk_idx];
 
