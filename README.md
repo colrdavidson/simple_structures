@@ -124,8 +124,9 @@ Not so great. You'll also have noticed another important tidbit...
 We don't have a real free for any of the allocators we've written yet!
 
 All that stale memory that we can't get to, is what we call "internal fragmentation".
+I'm a little sick of arenas, so we'll start with an allocator that's close to ideal for internal fragmentation.  
+The [Pool Allocator](allocators/pool.h)!
 
-I"m a little sick of arenas, so we'll start with an allocator that's close to ideal for internal fragmentation. The [Pool Allocator](allocators/pool.h).
 To manage our allocs and frees, our pool allocator converts the pointer it passes out to an index into an internal bitset,
 which uses a bit per slot to track whether the slot has been filled.
 
