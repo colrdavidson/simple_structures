@@ -61,8 +61,9 @@ Hashmaps are reasonably fast for storage, and very fast for lookup, as long as y
 
 ## Growing Pains
 So, we can't stay in a tiny little box forever. How do we get more memory? What if we don't want our hashmaps  
-to get full, or have to make guesses ahead of time about how much we'll need?  
-It's time to take a little detour into the humble linked list.
+to get full, or and don't want to have to make guesses ahead of time about how much space we'll need?  
+
+Quick detour into the humble linked list, and then we'll find out.
 
 ### Linked Lists
 The [Linked List](lists/simple_linked_list.h) is a clunky little guy, but it shows up in some very odd places.  
