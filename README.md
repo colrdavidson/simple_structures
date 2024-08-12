@@ -26,7 +26,7 @@ All of these should be in your go-to toolbox.
 - [Fixed HashMap](maps/fixed_map.h)
 - [Growing HashMap](maps/growing_map.h)
 - [String Interner](maps/intern.h)
-- [Bitset](allocators/pool.h)
+- [Bitmap](allocators/pool.h)
 
 # A Random Narrative Walk
 
@@ -129,11 +129,11 @@ I'm a little sick of arenas, so we'll start with an allocator that's close to id
 ### Solution #1 - Pools
 The [Pool Allocator](allocators/pool.h)!
 
-To manage our allocs and frees, our pool allocator converts the pointer it passes out to an index into an internal bitset,
+To manage our allocs and frees, our pool allocator converts the pointer it passes out to an index into an internal bitmap,
 which uses a bit per slot to track whether the slot has been filled.
 
-Bitsets give you the ability to track state in a very efficient compressed form, in our case, we're using 1 bit per 64-bit element,
-so we can track a 4096-byte page worth of slots in only 64 bytes. The larger the unit in our bitset, the more efficient the tracking gets.
+Bitmaps give you the ability to track state in a very efficient compressed form, in our case, we're using 1 bit per 64-bit element,
+so we can track a 4096-byte page worth of slots in only 64 bytes. The larger the unit in our bitmap, the more efficient the tracking gets.
 
 Our little pool allocator is solid for managing small allocations that need to be created and destroyed frequently,
 which makes it a great allocator for small linked list or tree nodes.

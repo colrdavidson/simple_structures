@@ -17,7 +17,7 @@ typedef struct Pool {
 	uint64_t unit_size;
 	uint64_t capacity;
 
-	uint64_t bitset_size;
+	uint64_t bitmap_size;
 } Pool;
 
 Pool *pool_init(Arena *a, uint64_t capacity, uint64_t unit_size) {
@@ -25,25 +25,25 @@ Pool *pool_init(Arena *a, uint64_t capacity, uint64_t unit_size) {
 	uint64_t initial_capacity = PAGE_ROUND_UP(capacity + sizeof(Pool));
 	Pool *p = (Pool *)arena_alloc(a, initial_capacity);
 
-	uint64_t bitset_size = DIV_ROUND_UP(initial_capacity, unit_size);
-	uint64_t real_capacity = initial_capacity - sizeof(Pool) - bitset_size;
+	uint64_t bitmap_size = DIV_ROUND_UP(initial_capacity, unit_size);
+	uint64_t real_capacity = initial_capacity - sizeof(Pool) - bitmap_size;
 
 	p->unit_size = unit_size;
 	p->capacity = real_capacity;
-	p->bitset_size = bitset_size;
+	p->bitmap_size = bitmap_size;
 	return p;
 }
 
 void *pool_get(Pool *p) {
-	uint64_t *bitset     = (uint64_t *)(p + sizeof(Pool));
-	uint8_t  *data_start = (uint8_t *)(p + sizeof(Pool) + p->bitset_size);
+	uint64_t *bitmap     = (uint64_t *)(p + sizeof(Pool));
+	uint8_t  *data_start = (uint8_t *)(p + sizeof(Pool) + p->bitmap_size);
 
-	// Scanning our bitset for free chunks
+	// Scanning our bitmap for free chunks
 	uint64_t full = ~0;
 	uint64_t empty = 0;
 
-	for (uint64_t i = 0; i < p->bitset_size; i++) {
-		uint64_t chunk = bitset[i];
+	for (uint64_t i = 0; i < p->bitmap_size; i++) {
+		uint64_t chunk = bitmap[i];
 		if (chunk == full) {
 			continue;
 		}
@@ -51,7 +51,7 @@ void *pool_get(Pool *p) {
 		// Handle the empty case special, because count leading zeros gets weird with a 0 val
 		if (chunk == empty) {
 			uint64_t mask = 1ull << 63;
-			bitset[i] = chunk ^ mask;
+			bitmap[i] = chunk ^ mask;
 
 			uint64_t offset = ((i * 64) * p->unit_size);
 			return (void *)(data_start + offset);
@@ -69,9 +69,9 @@ void *pool_get(Pool *p) {
 		// which means there's a space in slot 2
 		uint64_t bit_slot = __builtin_clzll(~chunk);
 		uint64_t mask = 1ull << (63 - bit_slot);
-		bitset[i] = chunk ^ mask;
+		bitmap[i] = chunk ^ mask;
 
-		// Each chunk in the bitset represents 64 slots of unit_size
+		// Each chunk in the bitmap represents 64 slots of unit_size
 		// Each bit is a unit_size slot
 		uint64_t offset = ((i * 64) * p->unit_size) + (bit_slot * p->unit_size);
 		return (void *)(data_start + offset);
@@ -83,20 +83,20 @@ void *pool_get(Pool *p) {
 }
 
 void pool_free(Pool *p, void *slot) {
-	uint64_t *bitset     = (uint64_t *)(p + sizeof(Pool));
-	uint8_t  *data_start = (uint8_t *)(p + sizeof(Pool) + p->bitset_size);
+	uint64_t *bitmap     = (uint64_t *)(p + sizeof(Pool));
+	uint8_t  *data_start = (uint8_t *)(p + sizeof(Pool) + p->bitmap_size);
 	uint8_t  *pool_max   = data_start + p->capacity;
 
 	// Double check that the "slot" we've got actually lives in our pool
 	uint8_t *slot_bytes = (uint8_t *)slot;
 	assert(slot_bytes >= data_start && slot_bytes < pool_max);
 
-	// Figure out where in our bitset things should live
+	// Figure out where in our bitmap things should live
 	uint64_t offset = (uint64_t)(slot_bytes - data_start);
 	uint64_t chunk_idx = (offset / p->unit_size) / 64;
 	uint64_t bit_idx   = (offset / p->unit_size) % 64;
 
-	uint64_t chunk = bitset[chunk_idx];
+	uint64_t chunk = bitmap[chunk_idx];
 
 	// Confirm that this isn't a double-free
 	uint64_t bit = (chunk << bit_idx) >> 63;
@@ -104,7 +104,7 @@ void pool_free(Pool *p, void *slot) {
 
 	// Free up that slot
 	uint64_t mask = ~(1ull << (63 - bit_idx));
-	bitset[chunk_idx] = chunk & mask;
+	bitmap[chunk_idx] = chunk & mask;
 
 	return;
 }
