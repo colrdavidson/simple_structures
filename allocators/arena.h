@@ -82,9 +82,11 @@ void *arena_alloc(Arena *arena_head, uint64_t size) {
 
 	if ((cur_arena->current + size) > cur_arena->capacity) {
 		arena_grow(arena_head, size);
+		cur_arena = arena_head->tail;
 	}
 
-	void *new_buffer = (void *)((cur_arena + sizeof(Arena)) + cur_arena->current);
+	char *cur_arena_bytes = (char *)cur_arena;
+	void *new_buffer = (void *)((cur_arena_bytes + sizeof(Arena)) + cur_arena->current);
 	cur_arena->current += size;
 	arena_head->total_size += size;
 	return new_buffer;
