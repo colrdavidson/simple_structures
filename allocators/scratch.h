@@ -18,19 +18,19 @@ typedef struct {
 ScratchAlloc scratch_init(uint64_t size) {
 	ScratchAlloc a;
 	a.size = PAGE_ROUND_UP(size);
-	printf("%llu -> %llu\n", size, a.size);
 	a.buffer = malloc(a.size);
 	a.current = 0;
 	return a;
 }
 
 void *scratch_alloc(ScratchAlloc *a, uint64_t size) {
-	if (a->current + size > a->size) {
+	uint64_t aligned_size = sizeof(uint64_t) * DIV_ROUND_UP(size, sizeof(uint64_t));
+	if (a->current + aligned_size > a->size) {
 		return NULL;
 	}
 
 	void *new_buffer = (void *)(a->buffer + a->current);
-	a->current += size;
+	a->current += aligned_size;
 	return new_buffer;
 }
 

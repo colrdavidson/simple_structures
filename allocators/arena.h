@@ -80,15 +80,17 @@ void arena_grow(Arena *arena_head, uint64_t size) {
 void *arena_alloc(Arena *arena_head, uint64_t size) {
 	Arena *cur_arena = arena_head->tail;
 
-	if ((cur_arena->current + size) > cur_arena->capacity) {
-		arena_grow(arena_head, size);
+	uint64_t aligned_size = sizeof(uint64_t) * DIV_ROUND_UP(size, sizeof(uint64_t));
+	if ((cur_arena->current + aligned_size) > cur_arena->capacity) {
+		arena_grow(arena_head, aligned_size);
 		cur_arena = arena_head->tail;
 	}
 
 	char *cur_arena_bytes = (char *)cur_arena;
 	void *new_buffer = (void *)((cur_arena_bytes + sizeof(Arena)) + cur_arena->current);
-	cur_arena->current += size;
-	arena_head->total_size += size;
+
+	cur_arena->current += aligned_size;
+	arena_head->total_size += aligned_size;
 	return new_buffer;
 }
 
